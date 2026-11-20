@@ -1,15 +1,20 @@
-import yfinance as yf
+ import yfinance as yf
+import pandas as pd
 
 def get_market_data(pair="EURUSD=X"):
     data = yf.download(
         pair,
         period="5d",
         interval="1h",
-        progress=False
+        progress=False,
+        auto_adjust=False
     )
 
-    if data.empty:
+    if data is None or data.empty:
         return None
+
+    if isinstance(data.columns, pd.MultiIndex):
+        data.columns = data.columns.get_level_values(0)
 
     return data.tail(20)
 
