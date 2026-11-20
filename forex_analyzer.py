@@ -1,4 +1,4 @@
-import yfinance as yf
+ import yfinance as yf
 import pandas as pd
 
 def analyze_market(pair="EURUSD=X"):
@@ -12,13 +12,20 @@ def analyze_market(pair="EURUSD=X"):
     if data.empty:
         return "Market data unavailable."
 
-    close = data["Close"].dropna()
+    close = data["Close"]
+
+    if isinstance(close, pd.DataFrame):
+        close = close.iloc[:, 0]
+
+    close = pd.to_numeric(
+        close, errors="coerce"
+    ).dropna()
 
     if len(close) < 20:
         return "Not enough market data."
 
-    sma = close.rolling(20).mean().iloc[-1]
-    current = close.iloc[-1]
+    current = float(close.iloc[-1])
+    sma = float(close.rolling(20).mean().iloc[-1])
 
     if current > sma:
         trend = "Bullish"
@@ -29,9 +36,6 @@ def analyze_market(pair="EURUSD=X"):
 
     return {
         "Pair": pair,
-        "Price": round(float(current), 5),
+        "Price": round(current, 5),
         "Trend": trend
     }
-
-if __name__ == "__main__":
-    print(analyze_market())
