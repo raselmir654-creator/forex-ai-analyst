@@ -1,4 +1,4 @@
- import yfinance as yf
+ importyfinance as yf
 import pandas as pd
 
 def get_market_data(pair="EURUSD=X"):
